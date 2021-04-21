@@ -4,20 +4,21 @@
 namespace App\UserPost\Service;
 
 
+use App\ApiClient\Method\Post\Entity\Post;
 use App\UserPost\PostsAnalyticsInterface;
 
 class LongestPostCharacterLengthPerMonthService implements PostsAnalyticsInterface
 {
 
     /**
-     * @param $posts
+     * @param Post $post
      * @return array
      */
-    public function getAnalytics($posts): array
+    public function getAnalytics(Post $post): array
     {
         $analytics = [];
 
-        foreach ($posts as $key => $data) {
+        foreach ($post->getPosts() as $data) {
             $date = $data->getCreatedTime()->format("Y-m");
             $analytics[$date] = (isset($analytics[$date])) ? max(
                 $analytics[$date],
@@ -25,6 +26,6 @@ class LongestPostCharacterLengthPerMonthService implements PostsAnalyticsInterfa
             ) : strlen($data->getMessage());
         }
 
-        return ['longestPostCharacterLengthPerMonthService' => $analytics];
+        return [PostsAnalyticsInterface::LONGEST_POST => $analytics];
     }
 }

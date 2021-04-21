@@ -18,9 +18,9 @@ try {
 }
 
 try {
-    $posts = $apiPostService->getPosts($token);
+   $post = $apiPostService->getPosts($token);
 } catch (GuzzleException $e) {
     echo json_encode(["success" => false, "message" => $e->getMessage()]);
     exit();
 }
-print_r($apiPostService->getAnalytics($posts));
+print_r($apiPostService->getTotalAnalytics($post));

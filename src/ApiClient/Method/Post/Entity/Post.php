@@ -10,6 +10,11 @@ use JMS\Serializer\Annotation\Type;
 class Post
 {
     /**
+     * @var array
+     */
+    private array $posts = [];
+
+    /**
      * @var string|null
      */
     private ?string $id = null;
@@ -62,5 +67,21 @@ class Post
     public function getCreatedTime(): DateTime
     {
         return $this->createdTime;
+    }
+
+    /**
+     * @param $post
+     */
+    public function addPost($post): void
+    {
+        $this->posts[] = $post;
+    }
+
+    /**
+     * @return array
+     */
+    public function getPosts(): array
+    {
+        return $this->posts;
     }
 }

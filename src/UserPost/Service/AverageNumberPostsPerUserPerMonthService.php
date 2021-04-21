@@ -4,20 +4,21 @@
 namespace App\UserPost\Service;
 
 
+use App\ApiClient\Method\Post\Entity\Post;
 use App\UserPost\PostsAnalyticsInterface;
 
 class AverageNumberPostsPerUserPerMonthService implements PostsAnalyticsInterface
 {
 
     /**
-     * @param $posts
+     * @param Post $post
      * @return array
      */
-    public function getAnalytics($posts): array
+    public function getAnalytics(Post $post): array
     {
         $analytics = [];
 
-        foreach ($posts as $key => $data) {
+        foreach ($post->getPosts() as $data) {
             $date = $data->getCreatedTime()->format("Y-m");
             $user = $data->getFromName();
             $analytics[$date][$user] = (isset($analytics[$date][$user])) ? $analytics[$date][$user] + 1 : 1;
@@ -27,6 +28,6 @@ class AverageNumberPostsPerUserPerMonthService implements PostsAnalyticsInterfac
             $analytics[$key] = round(array_sum($month) / count($month));
         }
 
-        return ['averageNumberPostsPerUserPerMonthService' => $analytics];
+        return [PostsAnalyticsInterface::AVERAGE_NUMBER => $analytics];
     }
 }

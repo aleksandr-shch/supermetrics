@@ -4,25 +4,26 @@
 namespace App\UserPost\Service;
 
 
+use App\ApiClient\Method\Post\Entity\Post;
 use App\UserPost\PostsAnalyticsInterface;
 
 class TotalPostsSplitWeekNumberService implements PostsAnalyticsInterface
 {
     /**
-     * @param $posts
+     * @param Post $post
      * @return array
      */
-    public function getAnalytics($posts): array
+    public function getAnalytics(Post $post): array
     {
         $analytics = [];
 
-        foreach ($posts as $key => $data) {
+        foreach ($post->getPosts() as $data) {
             $year = $data->getCreatedTime()->format("Y");
             $week = $data->getCreatedTime()->format("W");
             $date = $year . '(' . $week . ')';
             $analytics[$date] = (isset($analytics[$date])) ? $analytics[$date] + 1 : 1;
         }
 
-        return ['totalPostsSplitWeekNumberService' => $analytics];
+        return [PostsAnalyticsInterface::TOTAL_POST => $analytics];
     }
 }

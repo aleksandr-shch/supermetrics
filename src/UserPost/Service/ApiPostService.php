@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\UserPost\Service;
 
 
+use App\ApiClient\Method\Post\Entity\Post;
 use App\ApiClient\RequestBuilder;
 use App\ApiClient\SuperMetricsApiClient;
+use App\UserPost\PostsAnalyticsInterface;
 use Exception;
 use GuzzleHttp\Exception\GuzzleException;
 
@@ -23,6 +25,11 @@ class ApiPostService
     private array $config;
 
     /**
+     * @var array
+     */
+    private array $analytics = [];
+
+    /**
      * ApiPostService constructor.
      * @param SuperMetricsApiClient $api
      * @param array $config
@@ -31,6 +38,14 @@ class ApiPostService
     {
         $this->config = $config;
         $this->api = $api;
+    }
+
+    /**
+     * @param PostsAnalyticsInterface $postsAnalytics
+     */
+    public function addAnalytics(PostsAnalyticsInterface $postsAnalytics): void
+    {
+        $this->analytics[] = $postsAnalytics;
     }
 
     /**
@@ -61,43 +76,43 @@ class ApiPostService
 
     /**
      * @param $token
-     * @return array
+     * @return Post
      * @throws GuzzleException
      */
-    public function getPosts($token): array
+    public function getPosts($token): Post
     {
-        $posts = [];
+        $post = new Post();
 
         foreach (range(1, $this->config['pages']['limit']) as $page) {
             foreach (
                 $this->api->posts(RequestBuilder::create()->postsRequest($token, $page))->data()->getPosts(
-                ) as $key => $post
+                ) as $key => $postData
             ) {
-                $posts[] = $post;
+                $post->addPost($postData);
             }
         }
 
-        return $posts;
+        return $post;
     }
 
-    /**
-     * @param $posts
-     * @return string
-     */
-    public function getAnalytics($posts): string
-    {
-        $averageCharacterLengthPostsPerMonthService = new AverageCharacterLengthPostsPerMonthService();
-        $averageNumberPostsPerUserPerMonthService = new AverageNumberPostsPerUserPerMonthService();
-        $longestPostCharacterLengthPerMonthService = new LongestPostCharacterLengthPerMonthService();
-        $totalPostsSplitWeekNumberService = new TotalPostsSplitWeekNumberService();
 
-        return json_encode(
-            [
-                $averageCharacterLengthPostsPerMonthService->getAnalytics($posts),
-                $averageNumberPostsPerUserPerMonthService->getAnalytics($posts),
-                $longestPostCharacterLengthPerMonthService->getAnalytics($posts),
-                $totalPostsSplitWeekNumberService->getAnalytics($posts)
-            ]
-        );
+    /**
+     * @param Post $post
+     * @return bool|string
+     */
+    public function getTotalAnalytics(Post $post): bool|string
+    {
+        $result = [];
+
+        $this->addAnalytics(new AverageCharacterLengthPostsPerMonthService());
+        $this->addAnalytics(new AverageNumberPostsPerUserPerMonthService());
+        $this->addAnalytics(new LongestPostCharacterLengthPerMonthService());
+        $this->addAnalytics(new TotalPostsSplitWeekNumberService());
+
+        foreach ($this->analytics as $analytic) {
+            $result[] = $analytic->getAnalytics($post);
+        }
+
+        return json_encode($result);
     }
 }
