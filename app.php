@@ -12,7 +12,7 @@ $apiPostService = new ApiPostService($api, $config);
 
 try {
     $token = $apiPostService->getToken();
-} catch (GuzzleException|Exception $e) {
+} catch (GuzzleException | Exception $e) {
     echo json_encode(["success" => false, "message" => $e->getMessage()]);
     exit();
 }

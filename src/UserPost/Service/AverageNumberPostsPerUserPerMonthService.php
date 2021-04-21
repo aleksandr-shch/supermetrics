@@ -17,14 +17,14 @@ class AverageNumberPostsPerUserPerMonthService implements PostsAnalyticsInterfac
     {
         $analytics = [];
 
-        foreach ($posts as $key => $data){
+        foreach ($posts as $key => $data) {
             $date = $data->getCreatedTime()->format("Y-m");
             $user = $data->getFromName();
-            $analytics[$date][$user] = (isset( $analytics[$date][$user])) ?  $analytics[$date][$user]+1 : 1;
+            $analytics[$date][$user] = (isset($analytics[$date][$user])) ? $analytics[$date][$user] + 1 : 1;
         }
 
-        foreach ($analytics as $key => $month){
-            $analytics[$key] = round(array_sum($month)/count($month));
+        foreach ($analytics as $key => $month) {
+            $analytics[$key] = round(array_sum($month) / count($month));
         }
 
         return ['averageNumberPostsPerUserPerMonthService' => $analytics];

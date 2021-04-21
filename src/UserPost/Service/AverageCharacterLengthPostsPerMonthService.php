@@ -16,13 +16,13 @@ class AverageCharacterLengthPostsPerMonthService implements PostsAnalyticsInterf
     {
         $analytics = [];
 
-        foreach($posts as $key => $data){
+        foreach ($posts as $key => $data) {
             $date = $data->getCreatedTime()->format("Y-m");
             $analytics[$date][] = strlen($data->getMessage());
         }
 
-        foreach ($analytics as $key => $month){
-            $analytics[$key] = round(array_sum($month)/count($month));
+        foreach ($analytics as $key => $month) {
+            $analytics[$key] = round(array_sum($month) / count($month));
         }
 
         return ['averageCharacterLengthPostsPerMonthService' => $analytics];

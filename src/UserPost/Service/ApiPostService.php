@@ -49,9 +49,11 @@ class ApiPostService
         $registerResponse = $this->api->register($registerRequest);
 
         if ($registerResponse->fail()) {
-            throw new Exception(json_encode(
-                ["success" => false, "message" => "Register failed {$registerResponse->error()->description()}"]
-            ));
+            throw new Exception(
+                json_encode(
+                    ["success" => false, "message" => "Register failed {$registerResponse->error()->description()}"]
+                )
+            );
         }
 
         return $registerResponse->data()->slToken();
@@ -89,9 +91,13 @@ class ApiPostService
         $longestPostCharacterLengthPerMonthService = new LongestPostCharacterLengthPerMonthService();
         $totalPostsSplitWeekNumberService = new TotalPostsSplitWeekNumberService();
 
-        return json_encode([$averageCharacterLengthPostsPerMonthService->getAnalytics($posts),
-        $averageNumberPostsPerUserPerMonthService->getAnalytics($posts),
-        $longestPostCharacterLengthPerMonthService->getAnalytics($posts),
-        $totalPostsSplitWeekNumberService->getAnalytics($posts)]);
+        return json_encode(
+            [
+                $averageCharacterLengthPostsPerMonthService->getAnalytics($posts),
+                $averageNumberPostsPerUserPerMonthService->getAnalytics($posts),
+                $longestPostCharacterLengthPerMonthService->getAnalytics($posts),
+                $totalPostsSplitWeekNumberService->getAnalytics($posts)
+            ]
+        );
     }
 }

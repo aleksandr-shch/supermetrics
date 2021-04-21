@@ -16,11 +16,11 @@ class TotalPostsSplitWeekNumberService implements PostsAnalyticsInterface
     {
         $analytics = [];
 
-        foreach($posts as $key => $data){
+        foreach ($posts as $key => $data) {
             $year = $data->getCreatedTime()->format("Y");
             $week = $data->getCreatedTime()->format("W");
-            $date = $year.'('.$week.')';
-            $analytics[$date] = (isset($analytics[$date])) ? $analytics[$date]+1 : 1;
+            $date = $year . '(' . $week . ')';
+            $analytics[$date] = (isset($analytics[$date])) ? $analytics[$date] + 1 : 1;
         }
 
         return ['totalPostsSplitWeekNumberService' => $analytics];
